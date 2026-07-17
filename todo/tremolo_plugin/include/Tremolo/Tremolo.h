@@ -3,14 +3,23 @@
 namespace tremolo {
 class Tremolo {
 public:
+  Tremolo() {
+    lfo.setFrequency(5.f /*Hz*/, true);
+  }
   void prepare(double sampleRate, int expectedMaxFramesPerBlock) {
-    juce::ignoreUnused(sampleRate, expectedMaxFramesPerBlock);
+    const juce::dsp::ProcessSpec processSpec{
+    .sampleRate = sampleRate,
+    .maximumBlockSize = static_cast<juce::uint32>(expectedMaxFramesPerBlock),
+    .numChannels = 1u, // Same LFO applied to all channels therefore put 1 for numChannels
+    };
+    lfo.prepare(processSpec);
   }
 
   void process(juce::AudioBuffer<float>& buffer) noexcept {
     // for each frame
     for (const auto frameIndex : std::views::iota(0, buffer.getNumSamples())) {
-      // TODO: generate the LFO value
+      // generate the LFO value
+      const auto lfoValue = lfo.processSample(0.f);
 
       // TODO: calculate the modulation value
 
@@ -29,9 +38,13 @@ public:
     }
   }
 
-  void reset() noexcept {}
+  void reset() noexcept {
+    lfo.reset();
+  }
 
 private:
   // You should put class members and private functions here
+  juce::dsp::Oscillator<float>lfo{[](auto phase){return std::sin(phase);}}; // Created oscillator with mapping function
+
 };
 }  // namespace tremolo
