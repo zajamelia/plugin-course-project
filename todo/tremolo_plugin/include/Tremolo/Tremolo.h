@@ -19,9 +19,12 @@ public:
     // for each frame
     for (const auto frameIndex : std::views::iota(0, buffer.getNumSamples())) {
       // generate the LFO value
-      const auto lfoValue = lfo.processSample(0.f);
+      const auto lfoValue = lfo.processSample(0.f); // Get next LFO value (0 is  dummy input which is ignored by the oscillator)
 
-      // TODO: calculate the modulation value
+      // calculate the modulation value
+      constexpr auto modulationDepth = 0.4f;
+      const auto modulationValue = modulationDepth * lfoValue + 1.f; // LFO value converted into a volume multiplier (multiplied with audio sample to create tremolo effect)
+
 
       // for each channel sample in the frame
       for (const auto channelIndex :
@@ -29,8 +32,8 @@ public:
         // get the input sample
         const auto inputSample = buffer.getSample(channelIndex, frameIndex);
 
-        // TODO: modulate the sample
-        const auto outputSample = inputSample;
+        // modulate the sample
+        const auto outputSample = inputSample * modulationValue;
 
         // set the output sample
         buffer.setSample(channelIndex, frameIndex, outputSample);
