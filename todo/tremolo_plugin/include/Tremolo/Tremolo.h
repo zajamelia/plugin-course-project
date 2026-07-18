@@ -3,23 +3,32 @@
 namespace tremolo {
 class Tremolo {
 public:
+  enum class LfoWaveform: size_t {
+    sine=0,
+  };
+
   Tremolo() {
-    lfo.setFrequency(5.f /*Hz*/, true);
+    for (auto& lfo:lfos) {
+      lfo.setFrequency(5.f,true);
+    }
   }
+
   void prepare(double sampleRate, int expectedMaxFramesPerBlock) {
     const juce::dsp::ProcessSpec processSpec{
     .sampleRate = sampleRate,
     .maximumBlockSize = static_cast<juce::uint32>(expectedMaxFramesPerBlock),
     .numChannels = 1u, // Same LFO applied to all channels therefore put 1 for numChannels
     };
-    lfo.prepare(processSpec);
+    for (auto& lfo:lfos) {
+      lfo.prepare(processSpec);
+    }
   }
 
   void process(juce::AudioBuffer<float>& buffer) noexcept {
     // for each frame
     for (const auto frameIndex : std::views::iota(0, buffer.getNumSamples())) {
       // generate the LFO value
-      const auto lfoValue = lfo.processSample(0.f); // Get next LFO value (0 is  dummy input which is ignored by the oscillator)
+      const float lfoValue = getNextLfoValue();
 
       // calculate the modulation value
       constexpr auto modulationDepth = 0.4f;
@@ -42,12 +51,21 @@ public:
   }
 
   void reset() noexcept {
-    lfo.reset();
+    for (auto& lfo:lfos) {
+      lfo.reset();
+    }
   }
 
 private:
   // You should put class members and private functions here
-  juce::dsp::Oscillator<float>lfo{[](auto phase){return std::sin(phase);}}; // Created oscillator with mapping function
+  float getNextLfoValue() {
+    return lfos[juce::toUnderlyingType(currentLfo)].processSample(0.f);
+  }
+  std::array<juce::dsp::Oscillator<float>, 1u> lfos{
+    juce::dsp::Oscillator<float>{[](auto phase) { return std::sin(phase); }}
+  };
+  LfoWaveform currentLfo = LfoWaveform::sine;
+
 
 };
 }  // namespace tremolo
