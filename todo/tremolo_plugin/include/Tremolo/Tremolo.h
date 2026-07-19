@@ -13,7 +13,7 @@ public:
       lfo.setFrequency(5.f,true);
     }
   }
-
+  // Sets everything up before audio starts
   void prepare(double sampleRate, int expectedMaxFramesPerBlock) {
     const juce::dsp::ProcessSpec processSpec{
     .sampleRate = sampleRate,
@@ -23,6 +23,8 @@ public:
     for (auto& lfo:lfos) {
       lfo.prepare(processSpec);
     }
+
+    waveformSmoother.reset(sampleRate, 0.05/* ramp length */);
   }
 
   void setLfoWaveform(LfoWaveform waveform) {
@@ -30,7 +32,6 @@ public:
 
     lfoToSet = waveform;
   }
-
 
   void process(juce::AudioBuffer<float>& buffer) noexcept {
     updateLfoWaveform();
@@ -73,17 +74,27 @@ private:
   }
 
   float getNextLfoValue() {
+    if (waveformSmoother.isSmoothing())
+    {
+      return waveformSmoother.getNextValue();
+    }
     return lfos[juce::toUnderlyingType(currentLfo)].processSample(0.f);
   }
+
+  // "Has the user requested a different waveform?"
   void updateLfoWaveform() {
     if (currentLfo != lfoToSet) {
+      waveformSmoother.setCurrentAndTargetValue(getNextLfoValue());
       currentLfo = lfoToSet;
+      waveformSmoother.setTargetValue(getNextLfoValue());
     }
   }
   std::array<juce::dsp::Oscillator<float>, 2u> lfos{
     juce::dsp::Oscillator<float>{[](auto phase) { return std::sin(phase); }},
     juce::dsp::Oscillator<float>{triangle}
   };
+
+  juce::SmoothedValue<float> waveformSmoother;
 
   LfoWaveform currentLfo = LfoWaveform::sine;
   LfoWaveform lfoToSet = currentLfo;
