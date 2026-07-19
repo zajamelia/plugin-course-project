@@ -5,6 +5,7 @@ class Tremolo {
 public:
   enum class LfoWaveform: size_t {
     sine=0,
+    triangle=1,
   };
 
   Tremolo() {
@@ -24,7 +25,15 @@ public:
     }
   }
 
+  void setLfoWaveform(LfoWaveform waveform) {
+    jassert(waveform == LfoWaveform::sine || waveform == LfoWaveform::triangle);
+
+    lfoToSet = waveform;
+  }
+
+
   void process(juce::AudioBuffer<float>& buffer) noexcept {
+    updateLfoWaveform();
     // for each frame
     for (const auto frameIndex : std::views::iota(0, buffer.getNumSamples())) {
       // generate the LFO value
@@ -58,13 +67,26 @@ public:
 
 private:
   // You should put class members and private functions here
+  static float triangle(float phase) {
+    const auto ft = phase / juce::MathConstants<float>::twoPi;
+    return 4.f * std::abs(ft - std::floor(ft+0.5f))-1.f;
+  }
+
   float getNextLfoValue() {
     return lfos[juce::toUnderlyingType(currentLfo)].processSample(0.f);
   }
-  std::array<juce::dsp::Oscillator<float>, 1u> lfos{
-    juce::dsp::Oscillator<float>{[](auto phase) { return std::sin(phase); }}
+  void updateLfoWaveform() {
+    if (currentLfo != lfoToSet) {
+      currentLfo = lfoToSet;
+    }
+  }
+  std::array<juce::dsp::Oscillator<float>, 2u> lfos{
+    juce::dsp::Oscillator<float>{[](auto phase) { return std::sin(phase); }},
+    juce::dsp::Oscillator<float>{triangle}
   };
+
   LfoWaveform currentLfo = LfoWaveform::sine;
+  LfoWaveform lfoToSet = currentLfo;
 
 
 };
