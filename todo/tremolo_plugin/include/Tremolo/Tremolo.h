@@ -33,6 +33,12 @@ public:
     lfoToSet = waveform;
   }
 
+  void setModulationRate(float rate) {
+    for (auto& lfo:lfos) {
+      lfo.setFrequency(rate);
+    }
+  }
+
   void process(juce::AudioBuffer<float>& buffer) noexcept {
     updateLfoWaveform();
     // for each frame
@@ -98,6 +104,8 @@ private:
 
   LfoWaveform currentLfo = LfoWaveform::sine;
   LfoWaveform lfoToSet = currentLfo;
+
+
 
 
 };
