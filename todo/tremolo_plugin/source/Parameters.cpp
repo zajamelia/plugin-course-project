@@ -17,12 +17,23 @@ namespace tremolo {
       return parameterReference;
     }
 
+    juce::AudioParameterFloat& createGainParameter(juce::AudioProcessor& processor) {
+        constexpr auto versionHint = 1;
+        auto parameter = std::make_unique<juce::AudioParameterFloat>(juce::ParameterID{"gain", versionHint},"Gain",juce::NormalisableRange<float>{-12.f, 12.f, 0.1f},0.f, juce::AudioParameterFloatAttributes{}.withLabel("dB").withStringFromValueFunction([](float value,int) {
+            return juce::String(value,1);
+        }));
+
+        auto& parameterReference = *parameter;
+        processor.addParameter(parameter.release());
+        return parameterReference;
+    }
 
 
   }
 
   Parameters::Parameters(juce::AudioProcessor& processor)
-      : rate{createModulationRateParameter(processor)}
+      : rate{createModulationRateParameter(processor)},
+    gain{createGainParameter(processor)}
   {
   }
 
