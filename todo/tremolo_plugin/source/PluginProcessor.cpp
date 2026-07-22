@@ -104,7 +104,11 @@ void PluginProcessor::processBlock(juce::AudioBuffer<float>& buffer,
 
   // update parameters
   tremolo.setModulationRate(parameters.rate.get());
-  // TODO: check for bypass
+  // check for bypass
+  if (parameters.bypassed.get()) {
+    return;
+  }
+
 
   // apply tremolo
   tremolo.process(buffer);
@@ -133,6 +137,10 @@ void PluginProcessor::getStateInformation(juce::MemoryBlock& destData) {
 
   // TODO: implement state serialization to JSON
 }
+  juce::AudioProcessorParameter* PluginProcessor::getBypassParameter() const {
+  return &parameters.bypassed;
+}
+
 
 void PluginProcessor::setStateInformation(const void* data, int sizeInBytes) {
   // You should use this method to restore your parameters from this memory
