@@ -63,35 +63,37 @@ public:
   void prepare(const juce::dsp::ProcessSpec& spec) {
     sampleRateHz = spec.sampleRate;
     dryBuffer.setSize(static_cast<int>(spec.numChannels),
-                      static_cast<int>(spec.maximumBlockSize));
+                      static_cast<int>(spec.maximumBlockSize)); // Allocate memory to store dry signal
     dryGain.reset(spec.sampleRate, crossfadeLengthSeconds);
     wetGain.reset(spec.sampleRate, crossfadeLengthSeconds);
   }
 
   void setBypass(bool bypass) noexcept {
     const auto current = dryGain.getCurrentValue();
-    const auto target = bypass ? 1.0f : 0.0f;
-    const auto duration = crossfadeLengthSeconds * std::abs(target - current);
+    const auto target = bypass ? 1.0f : 0.0f; // condition ? value_if_true : value_if_false
+    const auto duration = crossfadeLengthSeconds * std::abs(target - current); // Calculate duration of transition
 
-    dryGain.reset(sampleRateHz, duration);
+    dryGain.reset(sampleRateHz, duration); //Update smoothing time
     wetGain.reset(sampleRateHz, duration);
 
-    dryGain.setCurrentAndTargetValue(current);
-    dryGain.setTargetValue(target);
+    dryGain.setCurrentAndTargetValue(current); // Start dry gain from current value
+    dryGain.setTargetValue(target); // Move dry gain to target value
 
-    wetGain.setCurrentAndTargetValue(1.0f - current);
+    wetGain.setCurrentAndTargetValue(1.0f - current); // Do the same for wet but in opposite direction
     wetGain.setTargetValue(1.0f - target);
   }
 
+  //Instantly change bypass (no smoothing)
   void setBypassForced(bool bypass) noexcept {
-    dryGain.setCurrentAndTargetValue(bypass ? 1.0f : 0.0f);
-    wetGain.setCurrentAndTargetValue(1.0f - dryGain.getTargetValue());
+    dryGain.setCurrentAndTargetValue(bypass ? 1.0f : 0.0f); // Set dry gain
+    wetGain.setCurrentAndTargetValue(1.0f - dryGain.getTargetValue()); // Set wet again to opposite value
   }
 
   [[nodiscard]] bool isTransitioning() const noexcept {
-    return dryGain.isSmoothing() || wetGain.isSmoothing();
+    return dryGain.isSmoothing() || wetGain.isSmoothing(); // Transition continues til both are finnished
   }
 
+  //Saves copy of dry audio
   void setDryBuffer(const juce::AudioBuffer<float>& buffer) noexcept {
     jassert(buffer.getNumSamples() <= dryBuffer.getNumSamples());
     jassert(buffer.getNumChannels() <= dryBuffer.getNumChannels());
@@ -100,7 +102,7 @@ public:
       dryBuffer.copyFrom(channel, 0, buffer, channel, 0,
                          buffer.getNumSamples());
     }
-    dryGain.applyGain(dryBuffer, buffer.getNumSamples());
+    dryGain.applyGain(dryBuffer, buffer.getNumSamples()); // Applies current dry gain
   }
 
   void mixToWetBuffer(juce::AudioBuffer<float>& buffer) noexcept {
@@ -108,6 +110,8 @@ public:
     jassert(buffer.getNumChannels() <= dryBuffer.getNumChannels());
 
     wetGain.applyGain(buffer, buffer.getNumSamples());
+
+    //Add dry buffer to wet buffer
     for (const auto channel : std::views::iota(0, buffer.getNumChannels())) {
       buffer.addFrom(channel, 0, dryBuffer, channel, 0, buffer.getNumSamples());
     }
@@ -123,6 +127,6 @@ private:
   double sampleRateHz = 0.0;
   juce::LinearSmoothedValue<float> dryGain{0.f};
   juce::LinearSmoothedValue<float> wetGain{1.f};
-  juce::AudioBuffer<float> dryBuffer;
+  juce::AudioBuffer<float> dryBuffer; // store original audio
 };
 }  // namespace tremolo
