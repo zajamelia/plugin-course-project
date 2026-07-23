@@ -56,7 +56,7 @@ void PluginProcessor::prepareToPlay(double sampleRate,
   // initialization that you need, e.g., allocate memory.
 
   tremolo.prepare(sampleRate, expectedMaxFramesPerBlock);
-  BypassTransitionSmoother.prepare({
+  bypassTransitionSmoother.prepare({
     .sampleRate = sampleRate,
     .maximumBlockSize=static_cast<juce::uint32>(expectedMaxFramesPerBlock),
     .numChannels = static_cast<juce::uint32>(juce::jmax(getTotalNumInputChannels(), getTotalNumOutputChannels())),
