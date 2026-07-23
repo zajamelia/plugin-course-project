@@ -32,13 +32,17 @@ namespace tremolo {
         auto parameter = std::make_unique<juce::AudioParameterBool>(juce::ParameterID{"bypassed",versionHint}, "Bypass", false);
         return addParameterToProcessor(processor, std::move(parameter));
     }
-
+    juce::AudioParameterChoice& createWaveformParameter(juce::AudioProcessor& processor) {
+          constexpr auto versionHint = 1;
+          auto parameter = std::make_unique<juce::AudioParameterChoice>(juce::ParameterID{"modulation.waveform", versionHint},"Modulation waveform", juce::StringArray{"Sine","Triangle"},0); // 0 because it corresponds to sine waveform
+          return addParameterToProcessor(processor, std::move(parameter));
+      }
 
   }
 
   Parameters::Parameters(juce::AudioProcessor& processor)
       : rate{createModulationRateParameter(processor)},
-    gain{createGainParameter(processor)}, bypassed{createBypassedParameter(processor)}
+    gain{createGainParameter(processor)}, bypassed{createBypassedParameter(processor)}, waveform{createWaveformParameter(processor)}
   {
   }
 

@@ -35,8 +35,13 @@ public:
 
   juce::AudioProcessorParameter* getBypassParameter() const override;
 
+  Parameters& getParameterRefs()
+  {
+    return parameters;
+  }
+
 private:
-  // TODO: add parameters
+  // add parameters
   Parameters parameters{*this};
 
   BypassTransitionSmoother bypassTransitionSmoother;
