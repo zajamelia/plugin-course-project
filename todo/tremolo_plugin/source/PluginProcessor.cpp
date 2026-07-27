@@ -125,10 +125,6 @@ void PluginProcessor::processBlock(juce::AudioBuffer<float>& buffer,
   
   bypassTransitionSmoother.mixToWetBuffer(buffer);
 
-  //apply output gain
-  const auto gainInDb = parameters.gain.get();
-  const auto linearGain = juce::Decibels::decibelsToGain(gainInDb);
-  buffer.applyGain(linearGain);
 
 }
 
@@ -142,10 +138,8 @@ juce::AudioProcessorEditor* PluginProcessor::createEditor() {
 }
 
 void PluginProcessor::getStateInformation(juce::MemoryBlock& destData) {
-  // You should use this method to store your parameters in the memory block.
-  // You could do that either as raw data, or use the XML or ValueTree classes
-  // as intermediaries to make it easy to save and load complex data.
-  juce::ignoreUnused(destData);
+  juce::MemoryOutputStream outputStream{destData, true};
+  JsonSerializer::serialize(parameters, outputStream);
 
   // TODO: implement state serialization to JSON
 }
@@ -155,12 +149,11 @@ void PluginProcessor::getStateInformation(juce::MemoryBlock& destData) {
 
 
 void PluginProcessor::setStateInformation(const void* data, int sizeInBytes) {
-  // You should use this method to restore your parameters from this memory
-  // block, whose contents will have been created by the getStateInformation()
-  // call.
-  juce::ignoreUnused(data, sizeInBytes);
-
-  // TODO: implement state deserialization from JSON
+  juce::MemoryInputStream inputStream{data,static_cast<size_t>(sizeInBytes), false};
+ const auto result = JsonSerializer::deserialize(inputStream,parameters);
+  if (result.failed()) {
+    DBG(result.getErrorMessage());
+  }
 }
 }  // namespace tremolo
 
