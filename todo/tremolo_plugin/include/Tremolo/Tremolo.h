@@ -39,6 +39,11 @@ public:
     }
   }
 
+  void setModulationDepth(float depth) {
+    modulationDepth = depth;
+  }
+
+
   void process(juce::AudioBuffer<float>& buffer) noexcept {
     updateLfoWaveform();
     // for each frame
@@ -47,7 +52,6 @@ public:
       const float lfoValue = getNextLfoValue();
 
       // calculate the modulation value
-      constexpr auto modulationDepth = 0.4f;
       const auto modulationValue = modulationDepth * lfoValue + 1.f; // LFO value converted into a volume multiplier (multiplied with audio sample to create tremolo effect)
 
 
@@ -104,6 +108,8 @@ private:
 
   LfoWaveform currentLfo = LfoWaveform::sine;
   LfoWaveform lfoToSet = currentLfo;
+
+  float modulationDepth = 0.4f;
 
 
 
