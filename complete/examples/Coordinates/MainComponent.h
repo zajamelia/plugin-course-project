@@ -6,10 +6,8 @@ public:
   Coordinates() { setBounds(0, 0, 400, 400); }
 
   void paint(juce::Graphics& g) override {
-    g.setColour(juce::Colours::red);
-    g.fillRect(rect1);
-    g.setColour(juce::Colours::blue);
-    g.fillRect(rect2);
+    g.setColour(juce::Colours::white);
+    g.fillEllipse(100.f,100.f,200.f,200.f);
   }
 
   void resized() override {

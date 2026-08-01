@@ -8,6 +8,7 @@ PluginEditor::PluginEditor(PluginProcessor& p) : AudioProcessorEditor(&p) {
 
   addAndMakeVisible(background);
   addAndMakeVisible(logo);
+  addAndMakeVisible(lfoVisualizer);
 
   // Make sure that before the constructor has finished, you've set the
   // editor's size to whatever you need it to be.
@@ -20,5 +21,8 @@ void PluginEditor::resized() {
   background.setBounds(bounds);
 
   logo.setBounds({16, 16, 105, 24});
+
+  lfoVisualizer.setBounds({18,149,504,92});
+
 }
 }  // namespace tremolo
