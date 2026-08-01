@@ -24,5 +24,6 @@ void PluginEditor::resized() {
 
   lfoVisualizer.setBounds({18,149,504,92});
 
+
 }
 }  // namespace tremolo
