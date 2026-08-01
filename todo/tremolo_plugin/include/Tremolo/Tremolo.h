@@ -7,6 +7,10 @@ public:
     sine=0,
     triangle=1,
   };
+  static float triangle(float phase) {
+    const auto ft = phase / juce::MathConstants<float>::twoPi;
+    return 4.f * std::abs(ft - std::floor(ft+0.5f))-1.f;
+  }
 
   Tremolo() {
     for (auto& lfo:lfos) {
@@ -78,10 +82,6 @@ public:
 
 private:
   // You should put class members and private functions here
-  static float triangle(float phase) {
-    const auto ft = phase / juce::MathConstants<float>::twoPi;
-    return 4.f * std::abs(ft - std::floor(ft+0.5f))-1.f;
-  }
 
   float getNextLfoValue() {
     if (waveformSmoother.isSmoothing())
