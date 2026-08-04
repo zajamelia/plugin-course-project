@@ -12,6 +12,12 @@ namespace tremolo {
             currentWaveform = waveform;
             resized();
         }
+        void setStrokeWidth(float width) {
+            strokeWidth = width;
+            resized();   // Rebuild the path
+            repaint();   // Draw it again
+        }
+
         // Only job: draw path
         void paint(juce::Graphics& g) override {
             g.setColour(juce::Colours::aqua);
