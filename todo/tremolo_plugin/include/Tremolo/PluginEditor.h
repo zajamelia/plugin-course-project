@@ -14,7 +14,11 @@ public:
 
   juce::Slider rateSlider;
   juce::SliderParameterAttachment rateAttachment;
-  juce::Slider lfoCurveWidthSlider;
+
+  juce::Slider depthSlider;
+  juce::SliderParameterAttachment depthAttachment;
+
+
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PluginEditor)
 };

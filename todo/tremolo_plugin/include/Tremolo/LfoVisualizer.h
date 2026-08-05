@@ -12,11 +12,6 @@ namespace tremolo {
             currentWaveform = waveform;
             resized();
         }
-        void setStrokeWidth(float width) {
-            strokeWidth = width;
-            resized();   // Rebuild the path
-            repaint();   // Draw it again
-        }
 
         // Only job: draw path
         void paint(juce::Graphics& g) override {
@@ -32,7 +27,7 @@ namespace tremolo {
                 waveformPath.clear();
                 waveformPath.startNewSubPath(-2.f,halfHeight + amplitude * std::sin(0.1f * -2.f));
                 for (const auto x: std::views::iota(-2,getWidth()+2)){
-                    waveformPath.lineTo(x,halfHeight + amplitude * std::sin(0.1* x));
+                    waveformPath.lineTo(x,halfHeight + amplitude * std::sin(0.1f* x));
                 }
             }
             else
@@ -40,7 +35,7 @@ namespace tremolo {
                 waveformPath.clear();
                 waveformPath.startNewSubPath(-2.f,halfHeight + amplitude * Tremolo::triangle(0.1f * -2.f));
                 for (const auto x: std::views::iota(-2,getWidth()+2)){
-                    waveformPath.lineTo(x,halfHeight + amplitude * Tremolo::triangle(0.1* x));
+                    waveformPath.lineTo(x,halfHeight + amplitude * Tremolo::triangle(0.1f* x));
                 }
 
             }

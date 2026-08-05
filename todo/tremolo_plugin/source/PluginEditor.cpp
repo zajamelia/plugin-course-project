@@ -1,6 +1,6 @@
 namespace tremolo {
 PluginEditor::PluginEditor(PluginProcessor& p) : AudioProcessorEditor(&p),
-    rateAttachment{p.getParameterRefs().rate,rateSlider}{
+    rateAttachment{p.getParameterRefs().rate,rateSlider}, depthAttachment{p.getParameterRefs().depth,depthSlider}{
   background.setImage(juce::ImageCache::getFromMemory(
       assets::Background_png, assets::Background_pngSize));
 
@@ -14,20 +14,15 @@ PluginEditor::PluginEditor(PluginProcessor& p) : AudioProcessorEditor(&p),
   rateSlider.setSliderStyle(juce::Slider::SliderStyle::Rotary); // Slider type
   rateSlider.setTextBoxStyle(juce::Slider::NoTextBox, false,0,0); // Removes text box
   rateSlider.setPopupDisplayEnabled(true,true,this); // Shows chosen preset when user hovers
- 
-
-
   rateSlider.setTextValueSuffix("Hz");
   addAndMakeVisible(rateSlider);
 
-  lfoCurveWidthSlider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
-  lfoCurveWidthSlider.setRange(0,10,1);
-    lfoCurveWidthSlider.onValueChange = [this]
-    {
-        lfoVisualizer.setStrokeWidth(lfoCurveWidthSlider.getValue());
-    };
+  depthSlider.setSliderStyle(juce::Slider::SliderStyle::Rotary);
+  depthSlider.setTextBoxStyle(juce::Slider::NoTextBox, false,0,0);
+  depthSlider.setPopupDisplayEnabled(true,true,this);
+  addAndMakeVisible(depthSlider);
 
-  addAndMakeVisible(lfoCurveWidthSlider);
+
 
 
   // Make sure that before the constructor has finished, you've set the
@@ -35,35 +30,29 @@ PluginEditor::PluginEditor(PluginProcessor& p) : AudioProcessorEditor(&p),
   setSize(540, 300);
 }
 
-void PluginEditor::resized() {
- auto bounds = getLocalBounds();
+    void PluginEditor::resized()
+{
+    auto bounds = getLocalBounds();
 
- auto backgroundBounds = bounds;
- backgroundBounds.removeFromBottom(30);
- background.setBounds(backgroundBounds);
+    auto backgroundBounds = bounds;
+    backgroundBounds.removeFromBottom(30);
+    background.setBounds(backgroundBounds);
 
- logo.setBounds({16, 16, 105, 24});
- lfoVisualizer.setBounds({18,149,504,92});
+    logo.setBounds({16, 16, 105, 24});
+    lfoVisualizer.setBounds({18, 149, 504, 92});
 
+    auto rateSliderBounds = bounds;
+    rateSliderBounds.removeFromLeft(180);
+    rateSliderBounds.removeFromRight(280);
+    rateSliderBounds.removeFromTop(40);
+    rateSliderBounds.removeFromBottom(150);
+    rateSlider.setBounds(rateSliderBounds);
 
-  auto rateSliderBounds = bounds;
-  rateSliderBounds.removeFromLeft(230);
-  rateSliderBounds.removeFromRight(230);
-  rateSliderBounds.removeFromTop(40);
-  rateSliderBounds.removeFromBottom(150);
-  rateSlider.setBounds(rateSliderBounds);
-
-  auto controlPanelBounds = bounds;
-  controlPanelBounds.removeFromTop(bounds.getHeight() - 30);
-
-  auto lfoCurveWidthSliderBounds = controlPanelBounds;
-    lfoCurveWidthSliderBounds.removeFromLeft(10);
-    lfoCurveWidthSliderBounds.removeFromRight(controlPanelBounds.getWidth()/2);
-    lfoCurveWidthSliderBounds.removeFromTop(10);
-    lfoCurveWidthSliderBounds.removeFromBottom(10);
-    lfoCurveWidthSlider.setBounds(lfoCurveWidthSliderBounds);
-
-
-
+    auto depthSliderBounds = bounds;
+    depthSliderBounds.removeFromLeft(280);
+    depthSliderBounds.removeFromRight(180);
+    depthSliderBounds.removeFromTop(40);
+    depthSliderBounds.removeFromBottom(150);
+    depthSlider.setBounds(depthSliderBounds);
 }
 }  // namespace tremolo
