@@ -1,5 +1,6 @@
 namespace tremolo {
-PluginEditor::PluginEditor(PluginProcessor& p) : AudioProcessorEditor(&p) {
+PluginEditor::PluginEditor(PluginProcessor& p) : AudioProcessorEditor(&p),
+    rateAttachment{p.getParameterRefs().rate,rateSlider}{
   background.setImage(juce::ImageCache::getFromMemory(
       assets::Background_png, assets::Background_pngSize));
 
@@ -13,10 +14,9 @@ PluginEditor::PluginEditor(PluginProcessor& p) : AudioProcessorEditor(&p) {
   rateSlider.setSliderStyle(juce::Slider::SliderStyle::Rotary); // Slider type
   rateSlider.setTextBoxStyle(juce::Slider::NoTextBox, false,0,0); // Removes text box
   rateSlider.setPopupDisplayEnabled(true,true,this); // Shows chosen preset when user hovers
-  rateSlider.setRange(1.0,30.0,0.5);
-  rateSlider.onValueChange = [this] {
-      DBG("Rate slider value: " << rateSlider.getValue());
-  };
+ 
+
+
   rateSlider.setTextValueSuffix("Hz");
   addAndMakeVisible(rateSlider);
 
