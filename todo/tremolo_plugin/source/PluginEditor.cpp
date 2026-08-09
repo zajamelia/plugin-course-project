@@ -41,12 +41,7 @@ PluginEditor::PluginEditor(PluginProcessor& p) : AudioProcessorEditor(&p),
     logo.setBounds({16, 16, 105, 24});
     lfoVisualizer.setBounds({18, 149, 504, 92});
 
-    auto rateSliderBounds = bounds;
-    rateSliderBounds.removeFromLeft(180);
-    rateSliderBounds.removeFromRight(280);
-    rateSliderBounds.removeFromTop(40);
-    rateSliderBounds.removeFromBottom(150);
-    rateSlider.setBounds(rateSliderBounds);
+    rateSlider.setBounds(180, 40, 100, 100);
 
     auto depthSliderBounds = bounds;
     depthSliderBounds.removeFromLeft(280);
