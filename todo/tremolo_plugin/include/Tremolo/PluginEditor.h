@@ -18,6 +18,9 @@ public:
   juce::Slider depthSlider;
   juce::SliderParameterAttachment depthAttachment;
 
+  juce::ToggleButton bypassButton{"BYPASSED"};
+  juce::ButtonParameterAttachment bypassAttachment;
+
 
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PluginEditor)

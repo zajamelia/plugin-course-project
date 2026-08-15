@@ -22,10 +22,20 @@ namespace tremolo {
             if (isEnabled())
             {
                 juce::Path valueArc;
-                valueArc.addPieSegment(bounds.toFloat(),rotaryStartAngle, toAngle,0.f);
+                valueArc.addCentredArc(
+    bounds.getCentreX(),      // centre X position
+    bounds.getCentreY(),      // centre Y position
+    bounds.getWidth() / 2.f,  // horizontal radius
+    bounds.getHeight() / 2.f, // vertical radius
+    0.f,                      // rotation of the whole ellipse
+    rotaryStartAngle,         // where arc starts
+    toAngle,                  // where arc ends
+    true                      // start a new path
+);
 
                 g.setColour (juce::Colours::aqua);
-                g.fillPath (valueArc);
+                g.strokePath(valueArc, juce::PathStrokeType(4.0f)
+);
             }
 
         }

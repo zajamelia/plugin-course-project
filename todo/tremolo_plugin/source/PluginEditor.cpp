@@ -1,6 +1,6 @@
 namespace tremolo {
 PluginEditor::PluginEditor(PluginProcessor& p) : AudioProcessorEditor(&p),
-    rateAttachment{p.getParameterRefs().rate,rateSlider}, depthAttachment{p.getParameterRefs().depth,depthSlider}{
+    rateAttachment{p.getParameterRefs().rate,rateSlider}, depthAttachment{p.getParameterRefs().depth,depthSlider}, bypassAttachment{p.getParameterRefs().bypassed,bypassButton}{
   background.setImage(juce::ImageCache::getFromMemory(
       assets::Background_png, assets::Background_pngSize));
 
@@ -10,6 +10,12 @@ PluginEditor::PluginEditor(PluginProcessor& p) : AudioProcessorEditor(&p),
   addAndMakeVisible(background);
   addAndMakeVisible(logo);
   addAndMakeVisible(lfoVisualizer);
+
+  bypassButton.onClick = [this] {
+      bypassButton.setButtonText(bypassButton.getToggleState()? "Bypassed": "Off");
+  };
+  bypassButton.onClick();
+  addAndMakeVisible(bypassButton);
 
   rateSlider.setSliderStyle(juce::Slider::SliderStyle::Rotary); // Slider type
   rateSlider.setTextBoxStyle(juce::Slider::NoTextBox, false,0,0); // Removes text box
@@ -37,7 +43,6 @@ PluginEditor::PluginEditor(PluginProcessor& p) : AudioProcessorEditor(&p),
     auto backgroundBounds = bounds;
     backgroundBounds.removeFromBottom(30);
     background.setBounds(backgroundBounds);
-
     logo.setBounds({16, 16, 105, 24});
     lfoVisualizer.setBounds({18, 149, 504, 92});
 
@@ -49,5 +54,14 @@ PluginEditor::PluginEditor(PluginProcessor& p) : AudioProcessorEditor(&p),
     depthSliderBounds.removeFromTop(40);
     depthSliderBounds.removeFromBottom(150);
     depthSlider.setBounds(depthSliderBounds);
+
+    auto buttonBounds = bounds;
+    buttonBounds.removeFromRight(16);
+    buttonBounds.removeFromTop(66);
+    buttonBounds.removeFromBottom(176);
+    buttonBounds.removeFromLeft(392);
+    bypassButton.setBounds(buttonBounds);
+
+
 }
 }  // namespace tremolo
