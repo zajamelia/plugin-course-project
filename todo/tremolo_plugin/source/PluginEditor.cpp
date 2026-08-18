@@ -28,12 +28,15 @@ PluginEditor::PluginEditor(PluginProcessor& p) : AudioProcessorEditor(&p),
   depthSlider.setPopupDisplayEnabled(true,true,this);
   addAndMakeVisible(depthSlider);
 
-
+ setLookAndFeel(&lookAndFeel);
 
 
   // Make sure that before the constructor has finished, you've set the
   // editor's size to whatever you need it to be.
   setSize(540, 300);
+}
+  PluginEditor::~PluginEditor() {
+    setLookAndFeel(nullptr);
 }
 
     void PluginEditor::resized()
@@ -46,7 +49,13 @@ PluginEditor::PluginEditor(PluginProcessor& p) : AudioProcessorEditor(&p),
     logo.setBounds({16, 16, 105, 24});
     lfoVisualizer.setBounds({18, 149, 504, 92});
 
-    rateSlider.setBounds(180, 40, 100, 100);
+    auto rateSliderBounds = bounds;
+    rateSliderBounds.removeFromLeft(180);
+    rateSliderBounds.removeFromRight(280);
+    rateSliderBounds.removeFromTop(40);
+    rateSliderBounds.removeFromBottom(150);
+    rateSlider.setBounds(rateSliderBounds);
+
 
     auto depthSliderBounds = bounds;
     depthSliderBounds.removeFromLeft(280);
@@ -58,7 +67,7 @@ PluginEditor::PluginEditor(PluginProcessor& p) : AudioProcessorEditor(&p),
     auto buttonBounds = bounds;
     buttonBounds.removeFromRight(16);
     buttonBounds.removeFromTop(66);
-    buttonBounds.removeFromBottom(176);
+    buttonBounds.removeFromBottom(206);
     buttonBounds.removeFromLeft(392);
     bypassButton.setBounds(buttonBounds);
 

@@ -1,4 +1,4 @@
-#pragma once
+/* #pragma once
 
 namespace tremolo {
     class RateSlider : public juce::Slider {
@@ -41,4 +41,4 @@ namespace tremolo {
         }
 
     };
-}
+} */
