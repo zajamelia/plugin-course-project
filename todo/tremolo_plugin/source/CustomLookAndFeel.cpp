@@ -14,6 +14,8 @@ namespace tremolo {
             }
             g.setGradientFill(buttonGradient);
             g.fillRoundedRectangle(bounds.toFloat(),4.f);
+            g.setColour(juce::Colour{0xFF263235});
+            g.drawRoundedRectangle(bounds.toFloat(), 6.f, 2.f);
             ;
             g.setColour(juce::Colour{0xFF501A0B});
         }
